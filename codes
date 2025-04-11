@@ -1,0 +1,101 @@
+import json
+import os
+
+DATA_FILE = "bank_data.json"
+
+# Load data from file
+def load_data():
+    if os.path.exists(DATA_FILE):
+        with open(DATA_FILE, 'r') as f:
+            return json.load(f)
+    return {}
+
+# Save data to file
+def save_data(data):
+    with open(DATA_FILE, 'w') as f:
+        json.dump(data, f, indent=4)
+
+# Create a new account
+def create_account(data):
+    acc_num = input("Enter new account number: ")
+    if acc_num in data:
+        print("Account already exists.")
+        return
+    name = input("Enter account holder name: ")
+    balance = float(input("Enter initial deposit amount: "))
+    data[acc_num] = {"name": name, "balance": balance}
+    print("Account created successfully.")
+
+# Deposit money
+def deposit(data):
+    acc_num = input("Enter account number: ")
+    if acc_num not in data:
+        print("Account not found.")
+        return
+    amount = float(input("Enter amount to deposit: "))
+    data[acc_num]["balance"] += amount
+    print("Deposit successful. New Balance:", data[acc_num]["balance"])
+
+# Withdraw money
+def withdraw(data):
+    acc_num = input("Enter account number: ")
+    if acc_num not in data:
+        print("Account not found.")
+        return
+    amount = float(input("Enter amount to withdraw: "))
+    if data[acc_num]["balance"] >= amount:
+        data[acc_num]["balance"] -= amount
+        print("Withdrawal successful. New Balance:", data[acc_num]["balance"])
+    else:
+        print("Insufficient balance.")
+
+# Check balance
+def check_balance(data):
+    acc_num = input("Enter account number: ")
+    if acc_num in data:
+        print("Account Holder:", data[acc_num]["name"])
+        print("Balance:", data[acc_num]["balance"])
+    else:
+        print("Account not found.")
+
+# View all accounts
+def view_all_accounts(data):
+    if not data:
+        print("No accounts found.")
+        return
+    print("All Accounts:")
+    for acc, info in data.items():
+        print(f"Account No: {acc}, Name: {info['name']}, Balance: {info['balance']}")
+
+# Main loop
+def main():
+    data = load_data()
+    while True:
+        print("\n===== Banking System Menu =====")
+        print("1. Create Account")
+        print("2. Deposit Money")
+        print("3. Withdraw Money")
+        print("4. Check Balance")
+        print("5. View All Accounts")
+        print("6. Exit")
+        choice = input("Enter your choice (1-6): ")
+
+        if choice == '1':
+            create_account(data)
+        elif choice == '2':
+            deposit(data)
+        elif choice == '3':
+            withdraw(data)
+        elif choice == '4':
+            check_balance(data)
+        elif choice == '5':
+            view_all_accounts(data)
+        elif choice == '6':
+            save_data(data)
+            print("Exiting system. Data saved.")
+            break
+        else:
+            print("Invalid choice. Try again.")
+
+if __name__ == "__main__":
+    main()
